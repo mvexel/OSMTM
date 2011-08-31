@@ -140,6 +140,28 @@ def job(request):
     id = request.matchdict['id']
     session = DBSession()
     job = session.query(Job).get(id)
+    try:
+        username = authenticated_userid(request)
+        filter = and_(Tile.username==username, Tile.job_id==job.id)
+        current_task = session.query(Tile).filter(filter).one()
+    except NoResultFound, e:
+        current_task = None
+    return dict(job=job, 
+            bbox=loads(job.geometry).bounds,
+            current_task=current_task) 
+
+@view_config(route_name='job_geom', renderer='geojson', permission='edit')
+def job_geom(request):
+    id = request.matchdict['id']
+    session = DBSession()
+    job = session.query(Job).get(id)
+    return FeatureCollection([Feature(id=id, geometry=loads(job.geometry))])
+
+@view_config(route_name='tiles', renderer='geojson', permission='edit')
+def tiles(request):
+    id = request.matchdict['id']
+    session = DBSession()
+    job = session.query(Job).get(id)
     tiles = []
     for tile in job.tiles:
         checkout = None
@@ -147,14 +169,7 @@ def job(request):
             checkout = tile.checkout.isoformat()
         tiles.append(Feature(geometry=tile.to_polygon(),
             properties={'checkin': tile.checkin, 'checkout': checkout}))
-    try:
-        username = authenticated_userid(request)
-        filter = and_(Tile.username==username, Tile.job_id==job.id)
-        current_task = session.query(Tile).filter(filter).one()
-    except NoResultFound, e:
-        current_task = None
-    return dict(job=job, tiles=dumps(FeatureCollection(tiles)),
-            current_task=current_task) 
+    return FeatureCollection(tiles)
 
 @view_config(route_name='profile', renderer='user.mako', permission='edit')
 def profile(request):

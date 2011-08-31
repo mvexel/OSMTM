@@ -37,12 +37,12 @@
         </div>
     </section>
 </div>
-<script type="text/javascript">
-    var geometry = "${job.geometry}";
-    var zoom = ${job.zoom};
-    var tiles = ${tiles|n};
-</script>
 <script type="text/javascript" src="${request.static_url('OSMTM:static/OpenLayers.js')}"></script>
+<script type="text/javascript">
+    var id = ${job.id};
+    var job_url = "${request.route_url('job_geom', id=job.id)}";
+    var tiles_url = "${request.route_url('tiles', id=job.id)}";
+</script>
 <script type="text/javascript" src="${request.static_url('OSMTM:static/Div.js')}"></script>
 <script type="text/javascript" src="${request.static_url('OSMTM:static/Static.js')}"></script>
 <script type="text/javascript" src="${request.static_url('OSMTM:static/job.js')}"></script>

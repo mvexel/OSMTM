@@ -19,7 +19,8 @@ requires = [
     'oauth2==1.2.0',
     'imposm.parser',
     'geojson',
-    'WebTest'
+    'WebTest',
+    'papyrus'
     ]
 
 if sys.version_info[:3] < (2,5,0):

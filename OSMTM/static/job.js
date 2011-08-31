@@ -18,9 +18,6 @@ var layer = new OpenLayers.Layer.Vector("Objects", {
 
 map.addLayer(layer);
 
-var format = new OpenLayers.Format.WKT();
-layer.addFeatures(format.read(geometry));
-
 var colors = ["#aaa", "red", "green"];
 var context = {
     getColor: function(feature) {
@@ -48,8 +45,28 @@ var tilesLayer = new OpenLayers.Layer.Vector("Tiles Layers", {
     styleMap: new OpenLayers.StyleMap(style),
     renderers: ['Canvas']
 });
-format = new OpenLayers.Format.GeoJSON();
-var features = format.read(tiles);
-tilesLayer.addFeatures(features);
-map.zoomToExtent(tilesLayer.getDataExtent());
 map.addLayer(tilesLayer);
+
+var protocol = new OpenLayers.Protocol.HTTP({
+    url: job_url,
+    format: new OpenLayers.Format.GeoJSON(),
+    callback: function(response) {
+        if (response.success()) {
+            layer.addFeatures(response.features);
+            map.zoomToExtent(layer.getDataExtent());
+        }
+    }
+});
+protocol.read();
+
+protocol = new OpenLayers.Protocol.HTTP({
+    url: tiles_url,
+    format: new OpenLayers.Format.GeoJSON(),
+    callback: function(response) {
+        if (response.success()) {
+            tilesLayer.addFeatures(response.features);
+            map.zoomToExtent(tilesLayer.getDataExtent());
+        }
+    }
+});
+protocol.read();
