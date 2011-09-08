@@ -29,16 +29,14 @@ def task(request):
     tile = session.query(Tile).get((x, y, job_id))
     if tile is None:
         return HTTPNotFound()
-    polygon=tile.to_polygon()
     username = authenticated_userid(request)
     user = session.query(User).get(username)
     return dict(tile=tile,
-            feature=dumps(polygon),
             user=user,
             job_url=request.route_url('job', id=job_id),
             done_url=request.route_url('task_done', job=job_id, x=x, y=y))
 
-@view_config(route_name='task_done', permission='edit', renderer='json')
+@view_config(route_name='task_done', renderer='task.mako', permission='edit')
 def done(request):
     job_id = request.matchdict['job']
     x = request.matchdict['x']
@@ -56,7 +54,7 @@ def done(request):
         user = session.query(User).get(username)
         tile.checkin = int(user.role)
     session.add(tile)
-    return HTTPFound(location=request.route_url('job', id=job_id))
+    return dict(job=tile.job) 
 
 @view_config(route_name='task_unlock', permission='edit')
 def unlock(request):

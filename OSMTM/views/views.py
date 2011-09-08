@@ -140,15 +140,17 @@ def job(request):
     id = request.matchdict['id']
     session = DBSession()
     job = session.query(Job).get(id)
+    username = authenticated_userid(request)
+    user = session.query(User).get(username)
     try:
-        username = authenticated_userid(request)
         filter = and_(Tile.username==username, Tile.job_id==job.id)
         current_task = session.query(Tile).filter(filter).one()
     except NoResultFound, e:
         current_task = None
     return dict(job=job, 
             bbox=loads(job.geometry).bounds,
-            current_task=current_task) 
+            user=user,
+            tile=current_task) 
 
 @view_config(route_name='job_geom', renderer='geojson', permission='edit')
 def job_geom(request):

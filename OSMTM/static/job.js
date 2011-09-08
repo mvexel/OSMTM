@@ -70,3 +70,18 @@ protocol = new OpenLayers.Protocol.HTTP({
     }
 });
 protocol.read();
+
+$('form').live('submit', function() {
+    var formData = $(this).serialize();
+    $.ajax({
+        url: this.action,
+        data: formData,
+        success: function(responseText){
+            $('#task').html(responseText);
+        },
+        failure: function() {
+            alert("error");
+        }
+    });
+    return false;
+});
