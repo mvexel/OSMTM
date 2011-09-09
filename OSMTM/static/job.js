@@ -71,10 +71,15 @@ protocol = new OpenLayers.Protocol.HTTP({
 });
 protocol.read();
 
-$('form').live('submit', function() {
-    var formData = $(this).serialize();
+$('form').live('submit', function(e) {
+    var formData = $(this).serializeObject();
+    var submitName = e.originalEvent.explicitOriginalTarget.name;
+    if (submitName) {
+        formData[submitName] = true;
+    }
     $.ajax({
         url: this.action,
+        type: "POST",
         data: formData,
         success: function(responseText){
             $('#task').html(responseText);
@@ -85,3 +90,19 @@ $('form').live('submit', function() {
     });
     return false;
 });
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
