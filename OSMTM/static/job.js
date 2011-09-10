@@ -73,9 +73,9 @@ protocol.read();
 
 $('form').live('submit', function(e) {
     var formData = $(this).serializeObject();
-    var submitName = e.originalEvent.explicitOriginalTarget.name;
-    if (submitName) {
-        formData[submitName] = true;
+    if (e.originalEvent.explicitOriginalTarget &&
+        e.originalEvent.explicitOriginalTarget.name) {
+        formData[e.originalEvent.explicitOriginalTarget.name] = true;
     }
     $.ajax({
         url: this.action,
