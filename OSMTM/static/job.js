@@ -25,11 +25,13 @@ var context = {
         return colors[checkin];
     },
     getStrokeColor: function(feature) {
-        return (feature.attributes.checkout !== null) ?
+        return (feature.attributes.checkout &&
+                feature.attributes.checkout !== null) ?
             "orange" : "black";
     },
     getStrokeWidth: function(feature) {
-        return (feature.attributes.checkout !== null) ?
+        return (feature.attributes.checkout &&
+                feature.attributes.checkout !== null) ?
             1.5 : 0.3;
     }
 };
@@ -46,6 +48,26 @@ var tilesLayer = new OpenLayers.Layer.Vector("Tiles Layers", {
     renderers: ['Canvas']
 });
 map.addLayer(tilesLayer);
+
+function showTilesStatus() {
+    var protocol = new OpenLayers.Protocol.HTTP({
+        url: tiles_status_url,
+        format: new OpenLayers.Format.JSON(),
+        callback: function(response) {
+            if (response.success()) {
+                $.each(tilesLayer.features, function(index, feature) {
+                    feature.attributes = {};
+                });
+                $.each(response.features, function(id, val) {
+                    var feature = tilesLayer.getFeatureByFid(id);
+                    feature.attributes = val;
+                });
+                tilesLayer.redraw();
+            }
+        }
+    });
+    protocol.read();
+}
 
 var protocol = new OpenLayers.Protocol.HTTP({
     url: job_url,
@@ -66,29 +88,34 @@ protocol = new OpenLayers.Protocol.HTTP({
         if (response.success()) {
             tilesLayer.addFeatures(response.features);
             map.zoomToExtent(tilesLayer.getDataExtent());
+            showTilesStatus();
         }
     }
 });
 protocol.read();
 
+
 $('form').live('submit', function(e) {
     var formData = $(this).serializeObject();
-    if (e.originalEvent.explicitOriginalTarget &&
-        e.originalEvent.explicitOriginalTarget.name) {
-        formData[e.originalEvent.explicitOriginalTarget.name] = true;
-    }
+    var submitName = $("button[type=submit][clicked=true]").attr("name");
+    formData[submitName] = true;
     $.ajax({
         url: this.action,
         type: "POST",
         data: formData,
         success: function(responseText){
             $('#task').html(responseText);
+            showTilesStatus();
         },
         failure: function() {
             alert("error");
         }
     });
     return false;
+});
+$("form button[type=submit]").live('click', function() {
+    $("button[type=submit]", $(this).parents("form")).removeAttr("clicked");
+    $(this).attr("clicked", "true");
 });
 $.fn.serializeObject = function()
 {

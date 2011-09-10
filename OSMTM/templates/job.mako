@@ -32,6 +32,7 @@
     var id = ${job.id};
     var job_url = "${request.route_url('job_geom', id=job.id)}";
     var tiles_url = "${request.route_url('tiles', id=job.id)}";
+    var tiles_status_url = "${request.route_url('tiles_status', id=job.id)}";
 </script>
 <script type="text/javascript" src="${request.static_url('OSMTM:static/Div.js')}"></script>
 <script type="text/javascript" src="${request.static_url('OSMTM:static/Static.js')}"></script>

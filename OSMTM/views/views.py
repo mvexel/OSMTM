@@ -166,12 +166,25 @@ def tiles(request):
     job = session.query(Job).get(id)
     tiles = []
     for tile in job.tiles:
+        tiles.append(Feature(geometry=tile.to_polygon(),
+            id=str(tile.x) + '-' + str(tile.y)))
+    return FeatureCollection(tiles)
+
+@view_config(route_name='tiles_status', renderer='json', permission='edit')
+def tiles_status(request):
+    id = request.matchdict['id']
+    session = DBSession()
+    job = session.query(Job).get(id)
+    tiles = {} 
+    for tile in job.tiles:
         checkout = None
         if tile.checkout is not None:
             checkout = tile.checkout.isoformat()
-        tiles.append(Feature(geometry=tile.to_polygon(),
-            properties={'checkin': tile.checkin, 'checkout': checkout}))
-    return FeatureCollection(tiles)
+        if checkout is not None or tile.checkin != 0:
+            tiles[str(tile.x) + '-' + str(tile.y)] = dict(
+                checkin=tile.checkin,
+                checkout=checkout)
+    return tiles
 
 @view_config(route_name='profile', renderer='user.mako', permission='edit')
 def profile(request):

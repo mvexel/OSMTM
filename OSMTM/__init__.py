@@ -31,6 +31,7 @@ def main(global_config, **settings):
     config.add_route('job_new', '/job/new')
     config.add_route('job_geom', '/job/{id}.json')
     config.add_route('tiles', '/job/{id}/tiles')
+    config.add_route('tiles_status', '/job/{id}/tiles_status')
     config.add_route('job', '/job/{id}')
     config.add_route('task', '/job/{job}/task/{x}/{y}')
     config.add_route('task_unlock', '/job/{job}/task/{x}/{y}/unlock')
