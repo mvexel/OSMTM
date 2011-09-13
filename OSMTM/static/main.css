@@ -241,33 +241,40 @@ form {
         margin-left: 160px;
     }
 }
-#job, #job_new, #task {
-    section.job, section.task {
-        float: left;
-        text-align: left;
-        width: (@content-width/2)*0.95 - 20px;
-        margin-right: (@content-width/2)*0.05;
-        margin-left: @rhythm / 2;
+section.job, section.task {
+    clear: both;
+    text-align: left;
+    margin-right: (@content-width/2)*0.05;
+    margin-left: @rhythm / 2;
 
-        button[type="submit"] {
-            display: inline-block;
-            margin-left: 10px;
-        }
-        button img {
-            vertical-align: middle;
-        }
+    #job, #task {
+        float: left;
+        width: (@content-width/2)*0.95 - 20px;
     }
-    section.map {
+
+    button[type="submit"] {
+        display: inline-block;
+        margin-left: 10px;
+    }
+    button img {
+        vertical-align: middle;
+    }
+    .map {
         float: right;
         text-align: left;
         width: (@content-width/2)*0.95 - 20px;
         margin-right: (@content-width/2)*0.05;
         margin-left: @rhythm;
-        #map {
+        #map, #map2 {
             position: relative;
             .box-shadow(0, 0, 10px, rgba(0, 0, 0, 0.5));
             width: 100%;
             height: 400px;
+            clear: left;
+        }
+        #map2 {
+            margin-bottom: 10px;
+            /*display: none;*/
         }
         #relation_loading_msg {
             position: absolute;
@@ -306,10 +313,10 @@ form {
         }
     }
 }
-#task {
-    section.task {
-        #export {
-            font-size: 0.8em;
-        }
-    }
+section.task {
+    border-top: 1px solid grey;
+    padding-top: 10px;
+}
+#export {
+    font-size: 0.8em;
 }

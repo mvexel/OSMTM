@@ -1,20 +1,14 @@
-var map = new OpenLayers.Map('map', {
+var map2 = new OpenLayers.Map('map2', {
     controls: []
 });
 var osm = new OpenLayers.Layer.OSM();
-map.addLayer(osm);
-var tilesLayer = new OpenLayers.Layer.Vector("Tiles Layers", {
+map2.addLayer(osm);
+var map2TilesLayer = new OpenLayers.Layer.Vector("Tiles Layers", {
     projection: new OpenLayers.Projection("EPSG:4326"),
     displayInLayerSwitcher: false,
     renderers: ['Canvas']
 });
-
-format = new OpenLayers.Format.GeoJSON();
-var tiles = format.read(tiles);
-tilesLayer.addFeatures(tiles);
-map.zoomToExtent(tilesLayer.getDataExtent());
-map.zoomOut();
-map.addLayer(tilesLayer);
+map2.addLayer(map2TilesLayer);
 
 var roundd = function(input, decimals) {
     var p = Math.pow(10, decimals);
@@ -86,4 +80,4 @@ var exportOpen = function() {
         break;
     }
 };
-$('#export a').click(exportOpen);
+$('#export a').live('click', exportOpen);

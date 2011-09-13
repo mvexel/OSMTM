@@ -4,6 +4,12 @@
             <input type="submit" value="Take a task randomly"/>
         </form>
     </div>
+    <script type="text/javascript">
+        $(function() {
+            $('#map2').hide();
+            window.location.hash = '';
+        });
+    </script>
 % else:
     <h1>Task: ${tile.x} / ${tile.y}</h1>
     <div id="export">
@@ -58,6 +64,16 @@
             from geojson import dumps
             feature = dumps(tile.to_polygon())
         %>
-        var tiles = ${feature|n};
+        $(function() {
+            $('#map2').show();
+            window.location.hash = 'task';
+            var tiles = ${feature|n};
+            var format = new OpenLayers.Format.GeoJSON();
+            tiles = format.read(tiles);
+            map2TilesLayer.removeFeatures(map2TilesLayer.features);
+            map2TilesLayer.addFeatures(tiles);
+            map2.zoomToExtent(map2TilesLayer.getDataExtent());
+            map2.zoomOut();
+        });
     </script>
 % endif

@@ -22,7 +22,7 @@
         <script type="text/javascript" src="${request.static_url('OSMTM:static/main.js')}"></script>
         <script type="text/javascript" src="${request.static_url('OSMTM:static/CLEditor/jquery.cleditor.min.js')}"></script>
     </head>
-    <body id="${self.id()}">
+    <body>
         <header class="group"> 
         <div class="wrap"> 
             <a class="logo" href="/">OSM Tasking Manager</a> 
