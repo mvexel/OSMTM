@@ -3,20 +3,6 @@ var map = new OpenLayers.Map('map', {
 });
 var osm = new OpenLayers.Layer.OSM();
 map.addLayer(osm);
-var layer = new OpenLayers.Layer.Vector("Objects", {
-    style: {
-        strokeColor: "blue",
-        strokeWidth: 3,
-        strokeOpacity: 0.5,
-        fillOpacity: 0.2,
-        fillColor: "lightblue",
-        pointRadius: 6
-    },
-    projection: new OpenLayers.Projection("EPSG:4326"),
-    displayInLayerSwitcher: false
-});
-
-map.addLayer(layer);
 
 var colors = ["#aaa", "red", "green"];
 var context = {
@@ -48,6 +34,18 @@ var tilesLayer = new OpenLayers.Layer.Vector("Tiles Layers", {
     renderers: ['Canvas']
 });
 map.addLayer(tilesLayer);
+var jobLayer = new OpenLayers.Layer.Vector("Objects", {
+    style: {
+        strokeColor: "blue",
+        strokeWidth: 2,
+        strokeOpacity: 0.5,
+        fillOpacity: 0
+    },
+    projection: new OpenLayers.Projection("EPSG:4326"),
+    displayInLayerSwitcher: false
+});
+map.addLayer(jobLayer);
+var marker;
 
 function showTilesStatus() {
     var protocol = new OpenLayers.Protocol.HTTP({
@@ -74,8 +72,8 @@ var protocol = new OpenLayers.Protocol.HTTP({
     format: new OpenLayers.Format.GeoJSON(),
     callback: function(response) {
         if (response.success()) {
-            layer.addFeatures(response.features);
-            map.zoomToExtent(layer.getDataExtent());
+            jobLayer.addFeatures(response.features);
+            map.zoomToExtent(jobLayer.getDataExtent());
         }
     }
 });

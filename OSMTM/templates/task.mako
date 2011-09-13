@@ -8,6 +8,9 @@
         $(function() {
             $('#map2').hide();
             window.location.hash = '';
+            if (marker) {
+                jobLayer.removeFeatures([marker]);
+            }
         });
     </script>
 % else:
@@ -67,13 +70,19 @@
         $(function() {
             $('#map2').show();
             window.location.hash = 'task';
-            var tiles = ${feature|n};
+            var tile = ${feature|n};
             var format = new OpenLayers.Format.GeoJSON();
-            tiles = format.read(tiles);
+            tiles = format.read(tile);
             map2TilesLayer.removeFeatures(map2TilesLayer.features);
             map2TilesLayer.addFeatures(tiles);
             map2.zoomToExtent(map2TilesLayer.getDataExtent());
             map2.zoomOut();
+            var point = tiles[0].geometry.getCentroid();
+            marker = new OpenLayers.Feature.Vector(point, null, {
+                pointRadius: 20,
+                externalGraphic: '/static/target.gif'
+            });
+            jobLayer.addFeatures(marker);
         });
     </script>
 % endif
