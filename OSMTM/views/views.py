@@ -23,6 +23,8 @@ from sqlalchemy.sql.expression import and_
 
 from pyramid.security import remember, forget, authenticated_userid
 
+from datetime import datetime, timedelta
+
 import logging
 log = logging.getLogger(__file__)
 
@@ -31,9 +33,9 @@ log = logging.getLogger(__file__)
 #
 
 # our oauth key and secret (we're the consumer in the oauth protocol)
-# <http://www.openstreetmap.org/user/erilem/oauth_clients/217>
-CONSUMER_KEY = 'fxGma7joOqfMiG97vxGzg'
-CONSUMER_SECRET = '7kZ81u3zjlGTLtjgX7j4rfSNRJHwHyX8UNBBIvXb55k'
+# consumer key and secret created by Kate Chapman
+CONSUMER_KEY = 'BOFkVgLDXTSMP6VHfiX8MQ'
+CONSUMER_SECRET = '4o4uLSqLWMciG2fE2zGncLcdewPNi9wU1To51Iz2E'
 
 # OSM oauth URLs
 BASE_URL = 'http://www.openstreetmap.org/oauth'
@@ -142,15 +144,32 @@ def job(request):
     job = session.query(Job).get(id)
     username = authenticated_userid(request)
     user = session.query(User).get(username)
+    tiles = []
+    for tile in job.tiles:
+        checkTask(tile)
+
+    for tile in job.tiles:
+        checkout = None
+        if tile.checkout is not None:
+            checkout = tile.checkout.isoformat()
+        tiles.append(Feature(geometry=tile.to_polygon(),
+            properties={'checkin': tile.checkin, 'checkout': checkout}))
     try:
         filter = and_(Tile.username==username, Tile.job_id==job.id)
-        current_task = session.query(Tile).filter(filter).one()
+        tile = session.query(Tile).filter(filter).one()
     except NoResultFound, e:
-        current_task = None
+        tile = None
+
+    time_left = 0
+    if tile is not None and tile.checkout:
+        time_left = (tile.checkout - (datetime.now() - EXPIRATION_DURATION)) \
+            .seconds
+
     return dict(job=job, 
             bbox=loads(job.geometry).bounds,
             user=user,
-            tile=current_task) 
+            tile=tile,
+            time_left=time_left) 
 
 @view_config(route_name='job_geom', renderer='geojson', permission='edit')
 def job_geom(request):
@@ -203,3 +222,15 @@ def profile_update(request):
         session.flush()
         request.session.flash('Profile correctly updated!')
     return HTTPFound(location=request.route_url('profile'))
+
+# the time delta after which the task is unlocked (in seconds)
+EXPIRATION_DURATION = timedelta(seconds=2 * 60 * 60)
+
+# unlock the tile if expired
+def checkTask(tile):
+    session = DBSession()
+    if tile.checkout is not None:
+        if datetime.now() > tile.checkout + EXPIRATION_DURATION:
+            tile.username = None 
+            tile.checkout = None 
+            session.add(tile)

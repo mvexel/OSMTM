@@ -7,7 +7,7 @@ map.addLayer(osm);
 var colors = ["#aaa", "red", "green"];
 var context = {
     getColor: function(feature) {
-        checkin = feature.attributes.checkin || 0;
+        var checkin = feature.attributes.checkin || 0;
         return colors[checkin];
     },
     getStrokeColor: function(feature) {
