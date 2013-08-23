@@ -47,6 +47,10 @@ To create a virtual Python environment::
     rm -rf virtualenv-1.8*
     source env/bin/activate
 
+Or, if you have [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/):
+
+    mkvirtualenv osmtm
+
 To install OSMTM from source (the only option at this point) in the virtual
 Python environment execute the ``setup.py`` script::
 
