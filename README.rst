@@ -47,7 +47,7 @@ To create a virtual Python environment::
     rm -rf virtualenv-1.8*
     source env/bin/activate
 
-Or, if you have [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/):
+Or, if you have (virtualenvwrapper)[http://virtualenvwrapper.readthedocs.org/en/latest/]:
 
     mkvirtualenv osmtm
 
